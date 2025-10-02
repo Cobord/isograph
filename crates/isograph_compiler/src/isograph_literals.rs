@@ -213,7 +213,7 @@ pub fn read_iso_literals_source<TNetworkProtocol: NetworkProtocol + 'static>(
     let open_file = db.get_open_file(*relative_path);
 
     // Use the open file's content, if it exists, otherwise use the content of the file from the file system
-    let content = open_file.map(|x| &db.get(x).content).unwrap_or(content);
+    let content = open_file.map_or(content, |x| &db.get(x).content);
 
     IsoLiteralsSource {
         relative_path: *relative_path,
@@ -264,7 +264,7 @@ pub(crate) fn process_iso_literals<TNetworkProtocol: NetworkProtocol + 'static>(
                 }
 
                 IsoLiteralExtractionResult::EntrypointDeclaration(entrypoint_declaration) => {
-                    unprocessed_entrypoints.push((text_source, entrypoint_declaration))
+                    unprocessed_entrypoints.push((text_source, entrypoint_declaration));
                 }
             }
         }
@@ -364,7 +364,7 @@ pub fn extract_iso_literals_from_file_content<TNetworkProtocol: NetworkProtocol 
 
     EXTRACT_ISO_LITERAL
         .captures_iter(content)
-        .flat_map(|captures| {
+        .filter_map(|captures| {
             let iso_literal_match = captures.get(5).unwrap();
             if captures.get(1).is_some() {
                 // HACK

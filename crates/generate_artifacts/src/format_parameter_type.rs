@@ -69,7 +69,7 @@ fn format_server_field_type<TNetworkProtocol: NetworkProtocol>(
                     server_selectable_id,
                     indentation_level + 1,
                 );
-                s.push_str(&field_type)
+                s.push_str(&field_type);
             }
             s.push_str(&format!("{}}}", "  ".repeat(indentation_level as usize)));
             s

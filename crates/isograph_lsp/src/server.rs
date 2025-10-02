@@ -138,7 +138,7 @@ pub async fn run<TNetworkProtocol: NetworkProtocol + 'static>(
                         info!("{}", "File changes detected. Starting to compile.".cyan());
                         update_sources(&mut compiler_state.db, &changes)?;
                         compiler_state.run_garbage_collection();
-                    };
+                    }
                 } else {
                     // If any connection breaks or we have some file system errors, we can just end here.
                     break 'all_messages;

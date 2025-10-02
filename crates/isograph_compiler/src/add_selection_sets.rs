@@ -29,14 +29,14 @@ pub(crate) fn add_selection_sets_to_client_selectables<
                 if let Err(e) =
                     process_unprocessed_client_field_item(schema, unprocessed_client_field_item)
                 {
-                    errors.extend(e)
+                    errors.extend(e);
                 }
             }
             SelectionType::Object(unprocessed_client_pointer_item) => {
                 if let Err(e) =
                     process_unprocessed_client_pointer_item(schema, unprocessed_client_pointer_item)
                 {
-                    errors.extend(e)
+                    errors.extend(e);
                 }
             }
         }

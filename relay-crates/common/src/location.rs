@@ -54,8 +54,9 @@ impl SourceLocationKey {
 
     pub fn path(self) -> &'static str {
         match self {
-            SourceLocationKey::Embedded { path, .. } => path.lookup(),
-            SourceLocationKey::Standalone { path } => path.lookup(),
+            SourceLocationKey::Embedded { path, .. } | SourceLocationKey::Standalone { path } => {
+                path.lookup()
+            }
             SourceLocationKey::Generated => "<generated>",
         }
     }

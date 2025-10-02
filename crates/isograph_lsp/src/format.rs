@@ -46,7 +46,7 @@ pub fn on_format<TNetworkProtocol: NetworkProtocol + 'static>(
 
     let text_edits = extracted_items
         .iter()
-        .flat_map(|extraction| {
+        .filter_map(|extraction| {
             Some(TextEdit {
                 range: get_range_of_extraction(extraction, content),
                 new_text: format_extraction(

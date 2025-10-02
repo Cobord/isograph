@@ -90,7 +90,7 @@ fn generate_fixtures_for_files_in_folder(
                     );
                 }
             }
-            Err(_) => panic!("Failed to read an item in {folder:?}"),
+            Err(e) => panic!("Failed to read an item in {folder:?} due to {e}"),
         }
     }
 }

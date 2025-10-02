@@ -6,7 +6,7 @@
  */
 
 use colored::Colorize;
-use diff::Result::*;
+use diff::Result::{Both, Left, Right};
 
 /// Prints a diff between the expected and actual strings to stdout.
 pub(crate) fn print_diff(expected: &str, actual: &str) {
@@ -18,13 +18,13 @@ pub(crate) fn print_diff(expected: &str, actual: &str) {
                 let prev_is_change = line_index > 0 && is_change(&changes[line_index - 1]);
                 let next_is_change = changes.get(line_index + 1).is_some_and(is_change);
                 if prev_is_change || next_is_change {
-                    format!("| {}", context).dimmed()
+                    format!("| {context}").dimmed()
                 } else {
                     continue;
                 }
             }
-            Left(removed) => format!("- {}", removed).red(),
-            Right(added) => format!("+ {}", added).green(),
+            Left(removed) => format!("- {removed}").red(),
+            Right(added) => format!("+ {added}").green(),
         };
         println!("{:4} {}", line_index + 1, formatted_line);
     }

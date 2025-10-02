@@ -21,13 +21,12 @@ impl PersistedDocuments<'_> {
             .options
             .file
             .as_ref()
-            .map(|file| {
+            .map_or(*PERSISTED_DOCUMENT_FILE_NAME, |file| {
                 file.to_str()
                     .expect("Expected path to be able to be stringified.")
                     .intern()
                     .into()
-            })
-            .unwrap_or(*PERSISTED_DOCUMENT_FILE_NAME);
+            });
 
         ArtifactPathAndContent {
             file_content,

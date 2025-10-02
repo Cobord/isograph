@@ -16,7 +16,7 @@ pub(crate) fn uri_is_project_file<TNetworkProtocol: NetworkProtocol + 'static>(
     let config = db.get_isograph_config();
     let uri_path = match uri.to_file_path() {
         Ok(path) => path,
-        Err(_) => return false,
+        Err(()) => return false,
     };
 
     uri_path.starts_with(&config.project_root)

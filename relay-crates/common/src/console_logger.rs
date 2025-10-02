@@ -7,7 +7,7 @@
 
 use std::time::Instant;
 
-use colored::*;
+use colored::Colorize;
 use log::debug;
 
 use super::perf_logger::PerfLogEvent;
@@ -47,7 +47,7 @@ impl PerfLogger for ConsoleLogger {
 
 pub fn print_time(name: &str, time: Instant) {
     let elapsed_ms = time.elapsed().as_millis();
-    let elapsed_str = format!("{:4}ms", elapsed_ms);
+    let elapsed_str = format!("{elapsed_ms:4}ms");
     let elapsed_color = if elapsed_ms < 10 {
         elapsed_str.dimmed()
     } else if elapsed_ms < 100 {

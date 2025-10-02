@@ -230,7 +230,7 @@ fn parse_iso_literals<TNetworkProtocol: NetworkProtocol + 'static>(
             Err(e) => {
                 iso_literal_parse_errors.extend(e);
             }
-        };
+        }
     }
     if iso_literal_parse_errors.is_empty() {
         Ok(contains_iso)
@@ -253,11 +253,11 @@ impl ParsedIsoLiteralsMap {
             for (iso_literal, ..) in iso_literals {
                 match iso_literal {
                     IsoLiteralExtractionResult::ClientFieldDeclaration(_) => {
-                        client_field_count += 1
+                        client_field_count += 1;
                     }
                     IsoLiteralExtractionResult::EntrypointDeclaration(_) => entrypoint_count += 1,
                     IsoLiteralExtractionResult::ClientPointerDeclaration(_) => {
-                        client_pointer_count += 1
+                        client_pointer_count += 1;
                     }
                 }
             }
@@ -306,7 +306,7 @@ fn process_field_queue<TNetworkProtocol: NetworkProtocol + 'static>(
     options: &CompilerConfigOptions,
 ) -> Result<(), WithLocation<CreateAdditionalFieldsError>> {
     for (parent_object_entity_name, field_definitions_to_insert) in field_queue {
-        for server_field_to_insert in field_definitions_to_insert.into_iter() {
+        for server_field_to_insert in field_definitions_to_insert {
             let parent_object_entity = schema
                 .server_entity_data
                 .server_object_entity(parent_object_entity_name)

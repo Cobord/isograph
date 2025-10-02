@@ -57,7 +57,7 @@ impl SourcePrinter {
         let mut line_end_byte_indices = Vec::new();
         for (byte_index, chr) in source.char_indices() {
             if chr == '\n' {
-                line_end_byte_indices.push(byte_index + 1)
+                line_end_byte_indices.push(byte_index + 1);
             }
         }
         if source.ends_with('\n') {
@@ -73,14 +73,14 @@ impl SourcePrinter {
         let line_index_to_byte_range = |line_index: usize| {
             let end = line_end_byte_indices
                 .get(line_index)
-                .cloned()
+                .copied()
                 .unwrap_or_else(|| source.len());
             let start = if line_index == 0 {
                 0
             } else {
                 line_end_byte_indices
                     .get(line_index - 1)
-                    .cloned()
+                    .copied()
                     .unwrap_or_else(|| source.len())
             };
             start..end
@@ -106,7 +106,7 @@ impl SourcePrinter {
             let mut marker = String::new();
             for byte_index in line_index_to_byte_range(line_index) {
                 if byte_index == start_byte_index {
-                    currently_hightlighted = true
+                    currently_hightlighted = true;
                 } else if byte_index == end_byte_index {
                     currently_hightlighted = false;
                 }

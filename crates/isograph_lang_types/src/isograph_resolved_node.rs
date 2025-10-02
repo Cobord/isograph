@@ -56,5 +56,5 @@ fn get_path_using_selection_parent<'a>(
                 client_pointer_declaration.inner.client_pointer_name.item
             ));
         }
-    };
+    }
 }

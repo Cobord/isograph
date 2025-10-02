@@ -468,7 +468,7 @@ fn generate_function_import_statement(
     let file_name = match file_extensions {
         GenerateFileExtensionsOption::ExcludeExtensionsInFileImports => {
             let extension_char_count_including_dot =
-                relative_path.extension().map(|x| x.len() + 1).unwrap_or(0);
+                relative_path.extension().map_or(0, |x| x.len() + 1);
             &normalized_file_name
                 [0..(normalized_file_name.len() - extension_char_count_including_dot)]
         }

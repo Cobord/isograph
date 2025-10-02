@@ -145,7 +145,7 @@ fn handle_update_source_file<TNetworkProtocol: NetworkProtocol + 'static>(
                 source_path,
             );
             if db.remove_iso_literal(source_file_path).is_some() {
-                create_or_update_iso_literals(db, target_path)?
+                create_or_update_iso_literals(db, target_path)?;
             }
         }
         SourceEventKind::Remove(path) => {

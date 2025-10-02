@@ -204,7 +204,7 @@ impl ModifiedArgument {
                         )
                         .selectables
                         .iter()
-                        .flat_map(|(name, field_id)| match field_id {
+                        .filter_map(|(name, field_id)| match field_id {
                             DefinitionLocation::Server(s) => {
                                 Some((*name, PotentiallyModifiedField::Unmodified(*s)))
                             }
@@ -300,7 +300,7 @@ impl ModifiedArgument {
                     Location::generated(),
                 ));
             }
-        };
+        }
         Ok(())
     }
 }

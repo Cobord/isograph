@@ -245,7 +245,7 @@ impl<TNetworkProtocol: NetworkProtocol> Schema<TNetworkProtocol> {
                         field_name: selection_name.unchecked_conversion(),
                     });
                 }
-            };
+            }
         }
 
         Ok(current_entity)
@@ -336,7 +336,7 @@ impl<TNetworkProtocol: NetworkProtocol> Schema<TNetworkProtocol> {
                         field_name: selection_name.unchecked_conversion(),
                     });
                 }
-            };
+            }
         }
 
         Ok(path)
@@ -661,7 +661,7 @@ impl<TNetworkProtocol: NetworkProtocol> Schema<TNetworkProtocol> {
     > {
         self.client_scalar_selectables
             .values()
-            .flat_map(|field| match field.variant {
+            .filter_map(|field| match field.variant {
                 ClientFieldVariant::Link => None,
                 ClientFieldVariant::UserWritten(info) => Some((
                     SelectionType::Scalar((field.parent_object_entity_name, field.name.item)),

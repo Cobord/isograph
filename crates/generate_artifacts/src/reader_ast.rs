@@ -189,8 +189,7 @@ fn linked_field_ast_node<TNetworkProtocol: NetworkProtocol>(
     let name = linked_field.name.item;
     let alias = linked_field
         .reader_alias
-        .map(|x| format!("\"{}\"", x.item))
-        .unwrap_or("null".to_string());
+        .map_or("null".to_string(), |x| format!("\"{}\"", x.item));
 
     let arguments = get_serialized_field_arguments(
         &transform_arguments_with_child_context(
@@ -569,8 +568,7 @@ fn server_defined_scalar_field_ast_node(
     let field_name = scalar_field_selection.name.item;
     let alias = scalar_field_selection
         .reader_alias
-        .map(|x| format!("\"{}\"", x.item))
-        .unwrap_or("null".to_string());
+        .map_or("null".to_string(), |x| format!("\"{}\"", x.item));
     let arguments = get_serialized_field_arguments(
         &transform_arguments_with_child_context(
             scalar_field_selection
@@ -896,9 +894,9 @@ fn refetched_paths_with_path<TNetworkProtocol: NetworkProtocol>(
 
                         path.pop();
                     }
-                };
+                }
             }
-        };
+        }
     }
 
     paths

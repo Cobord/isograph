@@ -142,7 +142,7 @@ impl Display for FeatureFlag {
                 f.write_str("limited to: ")?;
                 f.write_str(&items.join(", "))
             }
-            FeatureFlag::Rollout { rollout } => write!(f, "Rollout: {:#?}", rollout),
+            FeatureFlag::Rollout { rollout } => write!(f, "Rollout: {rollout:#?}"),
         }
     }
 }

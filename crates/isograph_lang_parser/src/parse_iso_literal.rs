@@ -147,8 +147,7 @@ fn parse_iso_entrypoint_declaration(
                         IsographLiteralParseError::UnableToDeserializeDirectives { message },
                         directives
                             .first()
-                            .map(|x| x.span)
-                            .unwrap_or_else(Span::todo_generated),
+                            .map_or_else(Span::todo_generated, |x| x.span),
                     )
                 })?;
             Ok(EntrypointDeclaration {
@@ -234,8 +233,7 @@ fn parse_client_field_declaration_inner(
                     IsographLiteralParseError::UnableToDeserializeDirectives { message },
                     directives
                         .first()
-                        .map(|x| x.span)
-                        .unwrap_or_else(Span::todo_generated),
+                        .map_or_else(Span::todo_generated, |x| x.span),
                 )
             })?;
 
@@ -519,8 +517,7 @@ fn parse_selection(
                             IsographLiteralParseError::UnableToDeserializeDirectives { message },
                             directives
                                 .first()
-                                .map(|x| x.span)
-                                .unwrap_or_else(Span::todo_generated),
+                                .map_or_else(Span::todo_generated, |x| x.span),
                         )
                     })?;
                 SelectionTypeContainingSelections::Object(ObjectSelection {
@@ -540,8 +537,7 @@ fn parse_selection(
                             IsographLiteralParseError::UnableToDeserializeDirectives { message },
                             directives
                                 .first()
-                                .map(|x| x.span)
-                                .unwrap_or_else(Span::todo_generated),
+                                .map_or_else(Span::todo_generated, |x| x.span),
                         )
                     })?;
                 SelectionTypeContainingSelections::Scalar(ScalarSelection {

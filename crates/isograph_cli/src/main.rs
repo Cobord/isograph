@@ -48,14 +48,14 @@ async fn start_compiler(
         )
         .await
         {
-            Ok(_) => {
-                info!("{}", "Successfully watched. Exiting.\n")
+            Ok(()) => {
+                info!("{}", "Successfully watched. Exiting.\n");
             }
             Err(err) => {
                 error!("{}\n{:?}", "Error in watch process of some sort.\n", err);
                 std::process::exit(1);
             }
-        };
+        }
     } else if compile_and_print::<GraphQLNetworkProtocol>(
         &config_location,
         current_working_directory,

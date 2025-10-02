@@ -158,7 +158,7 @@ impl<Db: Database> Storage<Db> {
 
     pub fn remove<T>(&mut self, id: SourceId<T>) {
         self.assert_empty_dependency_stack();
-        self.internal.remove_source(id)
+        self.internal.remove_source(id);
     }
 
     pub fn remove_singleton<T: Singleton + 'static>(&mut self) {

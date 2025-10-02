@@ -89,7 +89,7 @@ impl MergedServerSelection {
 }
 
 fn get_variables(arguments: &[ArgumentKeyAndValue]) -> impl Iterator<Item = VariableName> + '_ {
-    arguments.iter().flat_map(|arg| match arg.value {
+    arguments.iter().filter_map(|arg| match arg.value {
         isograph_lang_types::NonConstantValue::Variable(v) => Some(v),
         // TODO handle variables in objects and lists
         _ => None,
@@ -388,7 +388,7 @@ fn transform_and_merge_child_selection_map_into_parent_map(
                                 &mut target_linked_field.selection_map,
                                 &child_linked_field.selection_map,
                                 parent_variable_context,
-                            )
+                            );
                         } else {
                             panic!(
                                 "Error: tried to merge non-linked field into linked field. This \
@@ -404,7 +404,7 @@ fn transform_and_merge_child_selection_map_into_parent_map(
                                 &mut target_linked_field.selection_map,
                                 &child_linked_field.selection_map,
                                 parent_variable_context,
-                            )
+                            );
                         } else {
                             panic!(
                                 "Error: tried to merge non-linked field into linked field. This \
@@ -420,7 +420,7 @@ fn transform_and_merge_child_selection_map_into_parent_map(
                                 &mut target_inline_fragment.selection_map,
                                 &child_inline_fragment.selection_map,
                                 parent_variable_context,
-                            )
+                            );
                         } else {
                             panic!(
                                 "Error: tried to merge non-inline fragment into inline fragment. \
@@ -430,7 +430,7 @@ fn transform_and_merge_child_selection_map_into_parent_map(
                     }
                 }
             }
-        };
+        }
     }
 }
 
@@ -679,7 +679,7 @@ fn get_used_variable_definitions<TNetworkProtocol: NetworkProtocol>(
 ) -> Vec<VariableDefinition<ServerEntityName>> {
     reachable_variables
         .iter()
-        .flat_map(|variable_name| {
+        .filter_map(|variable_name| {
             // HACK
             if *variable_name == "id" {
                 None
@@ -745,7 +745,7 @@ fn merge_validated_selections_into_selection_map<TNetworkProtocol: NetworkProtoc
                             newly_encountered_scalar_client_selectable_id,
                         );
                     }
-                };
+                }
             }
             SelectionType::Object(object_selection) => {
                 let parent_object_entity_name = *schema
@@ -1127,7 +1127,7 @@ fn merge_client_scalar_field<TNetworkProtocol: NetworkProtocol>(
                     encountered_client_type_map,
                     variable_context,
                     &scalar_field_selection.arguments,
-                )
+                );
             }
         },
     }
@@ -1411,7 +1411,7 @@ fn merge_server_scalar_field(
                 MergedServerSelection::InlineFragment(_) => {
                     panic!("Unexpected inline fragment, probably a bug in Isograph");
                 }
-            };
+            }
         }
         Entry::Vacant(vacant_entry) => {
             vacant_entry.insert(MergedServerSelection::ScalarField(
@@ -1436,8 +1436,8 @@ fn select_typename_and_id_fields_in_merged_selection<TNetworkProtocol: NetworkPr
     parent_object_entity: &ServerObjectEntity<TNetworkProtocol>,
 ) {
     if parent_object_entity.concrete_type.is_none() {
-        maybe_add_typename_selection(merged_selection_map)
-    };
+        maybe_add_typename_selection(merged_selection_map);
+    }
 
     // If the type has an id field, we must select it.
     if let Some(id_field) = schema
@@ -1462,7 +1462,7 @@ fn select_typename_and_id_fields_in_merged_selection<TNetworkProtocol: NetworkPr
                     MergedServerSelection::InlineFragment(_) => {
                         panic!("Unexpected inline fragment, probably a bug in Isograph");
                     }
-                };
+                }
             }
             Entry::Vacant(vacant_entry) => {
                 vacant_entry.insert(MergedServerSelection::ScalarField(

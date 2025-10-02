@@ -23,7 +23,7 @@ pub(crate) fn visit_selection_set<
         >,
     ),
 ) {
-    for selection in selection_set.iter() {
+    for selection in selection_set {
         match &selection.item {
             SelectionType::Scalar(scalar) => visit_selection(SelectionType::Scalar(scalar)),
             SelectionType::Object(object) => {

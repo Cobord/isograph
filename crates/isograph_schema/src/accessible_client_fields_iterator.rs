@@ -81,7 +81,7 @@ impl<TNetworkProtocol: NetworkProtocol> Iterator
                                 return Some(SelectionType::Object(client_pointer_id));
                             }
                             DefinitionLocation::Server(_) => {}
-                        };
+                        }
                         let next = iterator.next();
                         if next.is_some() {
                             self.sub_iterator = Some(Box::new(iterator));

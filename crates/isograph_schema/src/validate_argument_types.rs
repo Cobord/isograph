@@ -378,7 +378,7 @@ fn object_satisfies_type<TNetworkProtocol: NetworkProtocol>(
             server_scalar_selectables,
             server_object_selectables,
         ) {
-            Ok(_) => None,
+            Ok(()) => None,
             Err(e) => Some(Err(e)),
         },
         ObjectLiteralFieldType::Missing(field_name) => Some(Ok(*field_name)),

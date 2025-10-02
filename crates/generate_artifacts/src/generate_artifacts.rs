@@ -374,7 +374,7 @@ fn get_artifact_path_and_content_impl<TNetworkProtocol: NetworkProtocol>(
                             &s.field_map,
                         ));
                     }
-                };
+                }
             }
         }
     }
@@ -393,7 +393,7 @@ fn get_artifact_path_and_content_impl<TNetworkProtocol: NetworkProtocol>(
             }) => {
                 // If this user-written client field is reachable from an entrypoint,
                 // we've already noted the accessible client fields
-                encountered_output_types.extend(traversal_state.accessible_client_fields.iter())
+                encountered_output_types.extend(traversal_state.accessible_client_fields.iter());
             }
             None => {
                 // If this field is not reachable from an entrypoint, we need to
@@ -746,7 +746,7 @@ fn write_param_type_from_selection<TNetworkProtocol: NetworkProtocol>(
                         scalar_field_selection,
                         parent_object_entity_name,
                         client_field_name,
-                    )
+                    );
                 }
             }
         }

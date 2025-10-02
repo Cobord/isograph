@@ -33,10 +33,10 @@ impl<TScalarField, TLinkedField> SelectionTypeContainingSelections<TScalarField,
         };
         match self {
             SelectionTypeContainingSelections::Scalar(scalar_field) => {
-                scalar_field.arguments.iter().flat_map(get_variable)
+                scalar_field.arguments.iter().filter_map(get_variable)
             }
             SelectionTypeContainingSelections::Object(linked_field) => {
-                linked_field.arguments.iter().flat_map(get_variable)
+                linked_field.arguments.iter().filter_map(get_variable)
             }
         }
     }
@@ -61,9 +61,10 @@ pub type ScalarSelectionPath<'a> =
 
 impl<TScalarField> ScalarSelection<TScalarField> {
     pub fn name_or_alias(&self) -> WithLocation<SelectableNameOrAlias> {
-        self.reader_alias
-            .map(|item| item.map(SelectableNameOrAlias::from))
-            .unwrap_or_else(|| self.name.map(SelectableNameOrAlias::from))
+        self.reader_alias.map_or_else(
+            || self.name.map(SelectableNameOrAlias::from),
+            |item| item.map(SelectableNameOrAlias::from),
+        )
     }
 }
 
@@ -95,8 +96,9 @@ pub enum SelectionParentType<'a> {
 
 impl<TScalarField, TLinkedField> ObjectSelection<TScalarField, TLinkedField> {
     pub fn name_or_alias(&self) -> WithLocation<SelectableNameOrAlias> {
-        self.reader_alias
-            .map(|item| item.map(SelectableNameOrAlias::from))
-            .unwrap_or_else(|| self.name.map(SelectableNameOrAlias::from))
+        self.reader_alias.map_or_else(
+            || self.name.map(SelectableNameOrAlias::from),
+            |item| item.map(SelectableNameOrAlias::from),
+        )
     }
 }

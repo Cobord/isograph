@@ -198,7 +198,7 @@ fn validate_use_of_arguments_impl<TNetworkProtocol: NetworkProtocol>(
     ) {
         match argument_type {
             ArgumentType::Missing(variable_definition) => {
-                missing_args.push(variable_definition.clone())
+                missing_args.push(variable_definition.clone());
             }
             ArgumentType::Provided(field_argument_definition, selection_supplied_argument) => {
                 maybe_push_errors(
@@ -385,7 +385,7 @@ fn extend_reachable_variables_with_args(
 
 fn maybe_push_errors<E>(errors: &mut Vec<E>, result: Result<(), E>) {
     if let Err(e) = result {
-        errors.push(e)
+        errors.push(e);
     }
 }
 

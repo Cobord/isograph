@@ -245,9 +245,9 @@ pub(crate) fn generate_entrypoint_artifacts_with_client_field_traversal_result<
         normalization_ast_text,
         refetch_query_artifact_import,
         concrete_type: concrete_type.name.item,
-        directive_set: info
-            .map(|info| info.directive_set)
-            .unwrap_or(EntrypointDirectiveSet::None(EmptyDirectiveSet {})),
+        directive_set: info.map_or(EntrypointDirectiveSet::None(EmptyDirectiveSet {}), |info| {
+            info.directive_set
+        }),
     }
     .path_and_content(file_extensions);
 
@@ -268,7 +268,7 @@ pub(crate) fn generate_entrypoint_artifacts_with_client_field_traversal_result<
             artifact_info,
             file_extensions,
             persisted_documents,
-        ))
+        ));
     }
 
     paths_and_contents

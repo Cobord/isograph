@@ -156,7 +156,7 @@ impl<'a> Parser<'a> {
         if self.errors.is_empty() {
             let _ = self.parse_kind(TokenKind::EndOfFile);
         }
-        let document = document.unwrap_or_else(|_| ExecutableDocument {
+        let document = document.unwrap_or_else(|()| ExecutableDocument {
             span: Span::new(self.index(), self.index()),
             definitions: Default::default(),
         });
@@ -212,7 +212,7 @@ impl<'a> Parser<'a> {
     fn parse_eof(mut self) -> DiagnosticsResult<()> {
         self.parse_kind(TokenKind::EndOfFile)
             .map(|_| ())
-            .map_err(|_| self.errors)
+            .map_err(|()| self.errors)
     }
 
     // Document / Definitions
@@ -266,23 +266,16 @@ impl<'a> Parser<'a> {
         let source = self.source(token);
         match (token.kind, source) {
             (TokenKind::OpenBrace, _)
-            | (TokenKind::Identifier, "query")
-            | (TokenKind::Identifier, "mutation")
-            | (TokenKind::Identifier, "subscription")
-            | (TokenKind::Identifier, "fragment") => Ok(Definition::ExecutableDefinition(
-                self.parse_executable_definition()?,
-            )),
+            | (TokenKind::Identifier, "query" | "mutation" | "subscription" | "fragment") => Ok(
+                Definition::ExecutableDefinition(self.parse_executable_definition()?),
+            ),
             (TokenKind::StringLiteral, _)
             | (TokenKind::BlockStringLiteral, _)
-            | (TokenKind::Identifier, "schema")
-            | (TokenKind::Identifier, "scalar")
-            | (TokenKind::Identifier, "type")
-            | (TokenKind::Identifier, "interface")
-            | (TokenKind::Identifier, "union")
-            | (TokenKind::Identifier, "enum")
-            | (TokenKind::Identifier, "input")
-            | (TokenKind::Identifier, "directive")
-            | (TokenKind::Identifier, "extend") => Ok(Definition::TypeSystemDefinition(
+            | (
+                TokenKind::Identifier,
+                "schema" | "scalar" | "type" | "interface" | "union" | "enum" | "input"
+                | "directive" | "extend",
+            ) => Ok(Definition::TypeSystemDefinition(
                 self.parse_type_system_definition()?,
             )),
             _ => {
@@ -323,11 +316,9 @@ impl<'a> Parser<'a> {
             (TokenKind::OpenBrace, _) => Ok(ExecutableDefinition::Operation(
                 self.parse_operation_definition()?,
             )),
-            (TokenKind::Identifier, "query")
-            | (TokenKind::Identifier, "mutation")
-            | (TokenKind::Identifier, "subscription") => Ok(ExecutableDefinition::Operation(
-                self.parse_operation_definition()?,
-            )),
+            (TokenKind::Identifier, "query" | "mutation" | "subscription") => Ok(
+                ExecutableDefinition::Operation(self.parse_operation_definition()?),
+            ),
             (TokenKind::Identifier, "fragment") => Ok(ExecutableDefinition::Fragment(
                 self.parse_fragment_definition()?,
             )),
@@ -407,7 +398,7 @@ impl<'a> Parser<'a> {
             "extend" => self.parse_type_system_extension(),
             token_str => {
                 let error = Diagnostic::error(
-                    format!("Unexpected token: `{}`", token_str),
+                    format!("Unexpected token: `{token_str}`"),
                     Location::new(self.source_location, token.span),
                 );
                 self.record_error(error);
@@ -456,7 +447,7 @@ impl<'a> Parser<'a> {
             )),
             token_str => {
                 let error = Diagnostic::error(
-                    format!("Unexpected token `{}`", token_str),
+                    format!("Unexpected token `{token_str}`"),
                     Location::new(self.source_location, token.span),
                 );
                 self.record_error(error);
@@ -523,8 +514,7 @@ impl<'a> Parser<'a> {
             token_str => {
                 let error = Diagnostic::error(
                     format!(
-                        "Expected one of `query`, `mutation`, `subscription`, got `{}`",
-                        token_str
+                        "Expected one of `query`, `mutation`, `subscription`, got `{token_str}`"
                     ),
                     Location::new(self.source_location, token.span),
                 );
@@ -883,7 +873,7 @@ impl<'a> Parser<'a> {
             "VARIABLE_DEFINITION" => Ok(DirectiveLocation::VariableDefinition),
             token_str => {
                 let error = Diagnostic::error(
-                    format!("Unexpected `{}`, expected a directive location.", token_str),
+                    format!("Unexpected `{token_str}`, expected a directive location."),
                     Location::new(self.source_location, token.span),
                 );
                 self.record_error(error);
@@ -1411,7 +1401,7 @@ impl<'a> Parser<'a> {
                     self.record_error(Diagnostic::error(
                         SyntaxError::ExpectedArgument,
                         Location::new(self.source_location, span),
-                    ))
+                    ));
                 }
                 return Ok(Some(List {
                     span,
@@ -1548,7 +1538,7 @@ impl<'a> Parser<'a> {
             self.record_error(Diagnostic::error(
                 SyntaxError::ExpectedArgument,
                 Location::new(self.source_location, span),
-            ))
+            ));
         }
         Ok(Some(List {
             span,
@@ -2190,7 +2180,7 @@ fn get_common_indent(source: &str) -> usize {
     for line in lines {
         if let Some((first_index, _)) = line.match_indices(is_not_whitespace).next() {
             if common_indent.is_none_or(|indent| first_index < indent) {
-                common_indent = Some(first_index)
+                common_indent = Some(first_index);
             }
         }
     }

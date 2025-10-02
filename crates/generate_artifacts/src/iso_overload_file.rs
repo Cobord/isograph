@@ -195,7 +195,8 @@ type MatchesWhitespaceAndString<
         content.push_str(&entrypoint_overload);
     }
 
-    (match no_babel_transform {
+    #[allow(clippy::match_bool)]
+    match no_babel_transform {
         false => {
             content.push_str(
                 "
@@ -208,7 +209,7 @@ export function iso(_isographLiteralText: string):
             content.push_str("  throw new Error('iso: Unexpected invocation at runtime. Either the Babel transform ' +
       'was not set up, or it failed to identify this call site. Make sure it ' +
       'is being used verbatim as `iso`. If you cannot use the babel transform, ' + 
-      'set options.no_babel_transform to true in your Isograph config. ');\n}")
+      'set options.no_babel_transform to true in your Isograph config. ');\n}");
         }
         true => {
             let switch_cases = sorted_entrypoints(schema).into_iter().map(
@@ -238,9 +239,9 @@ export function iso(isographLiteralText: string):
             content.push_str(
                 "  } 
   return (clientFieldResolver: any) => clientFieldResolver;\n}",
-            )
+            );
         }
-    });
+    }
 
     imports.push_str(&content);
     ArtifactPathAndContent {

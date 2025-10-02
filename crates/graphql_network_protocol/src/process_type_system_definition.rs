@@ -196,7 +196,7 @@ pub fn process_graphql_type_system_document(
                         union_definition.name.item.into(),
                         union_member_type.item.into(),
                         &mut supertype_to_subtype_map,
-                    )
+                    );
                 }
             }
             GraphQLTypeSystemDefinition::SchemaDefinition(schema_definition) => {
@@ -209,17 +209,14 @@ pub fn process_graphql_type_system_document(
                 *graphql_root_types = Some(GraphQLRootTypes {
                     query: schema_definition
                         .query
-                        .map(|x| x.item.into())
-                        .unwrap_or_else(|| "Query".intern().into()),
+                        .map_or_else(|| "Query".intern().into(), |x| x.item.into()),
                     mutation: schema_definition
                         .mutation
-                        .map(|x| x.item.into())
-                        .unwrap_or_else(|| "Mutation".intern().into()),
+                        .map_or_else(|| "Mutation".intern().into(), |x| x.item.into()),
                     subscription: schema_definition
                         .subscription
-                        .map(|x| x.item.into())
-                        .unwrap_or_else(|| "Subscription".intern().into()),
-                })
+                        .map_or_else(|| "Subscription".intern().into(), |x| x.item.into()),
+                });
             }
         }
     }
@@ -295,7 +292,7 @@ pub fn process_graphql_type_extension_document(
                 definitions.push(WithLocation::new(definition, location));
             }
             GraphQLTypeSystemExtensionOrDefinition::Extension(extension) => {
-                extensions.push(WithLocation::new(extension, location))
+                extensions.push(WithLocation::new(extension, location));
             }
         }
     }
@@ -305,7 +302,7 @@ pub fn process_graphql_type_extension_document(
         graphql_root_types,
     )?;
 
-    for extension in extensions.into_iter() {
+    for extension in extensions {
         // TODO collect errors into vec
         // TODO we can encounter new interface implementations; we should account for that
 

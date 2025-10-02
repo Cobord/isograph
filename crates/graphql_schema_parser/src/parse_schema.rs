@@ -473,7 +473,7 @@ fn parse_schema_definition(
         RootOperationKind::Query => query_type = Some(first_root_operation_type.1),
         RootOperationKind::Subscription => subscription_type = Some(first_root_operation_type.1),
         RootOperationKind::Mutation => mutation_type = Some(first_root_operation_type.1),
-    };
+    }
 
     while tokens.parse_token_of_kind(TokenKind::CloseBrace).is_err() {
         let operation_type = parse_root_operation_type(tokens, text_source)?;
@@ -481,7 +481,7 @@ fn parse_schema_definition(
         match operation_type.0.item {
             RootOperationKind::Query => reassign_or_error(&mut query_type, &operation_type)?,
             RootOperationKind::Subscription => {
-                reassign_or_error(&mut subscription_type, &operation_type)?
+                reassign_or_error(&mut subscription_type, &operation_type)?;
             }
             RootOperationKind::Mutation => reassign_or_error(&mut mutation_type, &operation_type)?,
         }
@@ -628,7 +628,7 @@ fn parse_constant_directives(
                 .map_err(|with_span| with_span.map(SchemaParseError::from))?
                 .to_with_embedded_location(text_source),
             arguments: parse_optional_constant_arguments(tokens, text_source)?,
-        })
+        });
     }
     Ok(directives)
 }
