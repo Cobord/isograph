@@ -68,7 +68,7 @@ pub type BytesIdSet = HashSet<BytesId, BuildIdHasher<u32>>;
 
 /// An opaque token corresponding to an interned &str.
 ///
-/// You can recover the str with id.as_str() or using format!.
+/// You can recover the str with `id.as_str()` or using format!.
 #[derive(Copy, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
 #[repr(transparent)]
 pub struct StringId(BytesId);
@@ -78,6 +78,10 @@ impl StringId {
     pub const EMPTY: StringId = StringId(BytesId::EMPTY);
 
     /// Convert from raw bytes, which can only succeed if the bytes are valid utf-8.
+    ///
+    /// # Errors
+    ///
+    /// When `bytes` is not utf-8, give an Err with the description as to why not.
     pub fn from_bytes(bytes: BytesId) -> Result<StringId, Utf8Error> {
         match std::str::from_utf8(bytes.as_bytes()) {
             Ok(_) => Ok(StringId(bytes)),

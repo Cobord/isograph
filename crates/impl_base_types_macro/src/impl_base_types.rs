@@ -85,7 +85,7 @@ pub(crate) fn impl_base_types(
         let struct_generics_2 = struct_generics.clone();
         let trait_generics_without_angle_brackets = &item_trait.generics.params;
         let mut trait_generics = item_trait.generics.clone();
-        for mut param in trait_generics.params.iter_mut() {
+        for mut param in &mut trait_generics.params {
             if let GenericParam::Type(t) = &mut param {
                 t.bounds = Punctuated::new();
             }

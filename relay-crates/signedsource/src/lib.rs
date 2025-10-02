@@ -42,8 +42,7 @@ pub fn is_signed(data: &str) -> bool {
 pub fn sign_file(data: &str) -> String {
     try_sign_file(data).unwrap_or_else(|| {
         panic!(
-            "sign_file(...): Cannot sign file without token {}",
-            NEWTOKEN
+            "sign_file(...): Cannot sign file without token {NEWTOKEN}",
         )
     })
 }

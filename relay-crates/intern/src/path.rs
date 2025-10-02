@@ -39,7 +39,7 @@ impl PathId {
     /// on empty paths such as `/`.
     #[cfg(unix)]
     pub fn intern<P: AsRef<Path>>(mut parent: Option<PathId>, path: P) -> Self {
-        for c in path.as_ref().iter() {
+        for c in path.as_ref() {
             let p = InternId::intern(PathNode {
                 name: string::intern_bytes(c.as_bytes()),
                 parent,
@@ -68,17 +68,17 @@ impl PathId {
         self.parent
     }
 
-    /// Returns the final component as an &OsStr.
+    /// Returns the final component as an `&OsStr`.
     pub fn file_name(&self) -> &OsStr {
         self.get().file_name()
     }
 
-    /// Linearize this path as a PathBuf.
+    /// Linearize this path as a `PathBuf`.
     pub fn to_path_buf(&self) -> PathBuf {
         self.get().to_path_buf()
     }
 
-    /// Linearize this path, appending to an existing PathBuf.
+    /// Linearize this path, appending to an existing `PathBuf`.
     pub fn push_to(&self, buf: &mut PathBuf) {
         self.get().push_to(buf);
     }
@@ -145,19 +145,19 @@ pub struct PathNode {
 }
 
 impl PathNode {
-    /// Returns the final component as an &OsStr.
+    /// Returns the final component as an `&OsStr`.
     #[cfg(unix)]
     fn file_name(&self) -> &OsStr {
         OsStr::from_bytes(self.name.as_bytes())
     }
 
-    /// Returns the final component as an &OsStr.
+    /// Returns the final component as an `&OsStr`.
     #[cfg(not(unix))]
     fn file_name(&self) -> &OsStr {
         OsStr::new(self.name.as_str())
     }
 
-    /// Linearize this path as a PathBuf.
+    /// Linearize this path as a `PathBuf`.
     fn to_path_buf(&self) -> PathBuf {
         let mut path = match self.parent {
             Some(parent) => parent.to_path_buf(),
@@ -167,7 +167,7 @@ impl PathNode {
         path
     }
 
-    /// Linearize this path, appending to an existing PathBuf.
+    /// Linearize this path, appending to an existing `PathBuf`.
     fn push_to(&self, buf: &mut PathBuf) {
         if let Some(parent) = self.parent {
             parent.push_to(buf);

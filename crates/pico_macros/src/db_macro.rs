@@ -26,7 +26,7 @@ pub(crate) fn db_macro(item: TokenStream) -> TokenStream {
     let mut tracked = Vec::new();
     let mut errors = Vec::new();
 
-    for f in fields.named.iter() {
+    for f in &fields.named {
         let field_ident = f.ident.as_ref().unwrap();
         if has_attr(&f.attrs, "tracked") {
             if !matches!(f.vis, Visibility::Inherited) {

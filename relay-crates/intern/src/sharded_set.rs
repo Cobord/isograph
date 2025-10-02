@@ -203,7 +203,7 @@ impl<T: Eq + Hash, S: BuildHasher> ShardedSet<T, S> {
 
 impl<T: Sized + Hash, S: BuildHasher> InsertLock<'_, T, S> {
     /// Insert the given value into the set.  This value must borrow-match the
-    /// original value from get_or_insert_lock.
+    /// original value from `get_or_insert_lock`.
     pub fn insert<Q: Into<T>>(&mut self, q: Q) {
         let build_hasher = self.build_hasher;
         self.shard
