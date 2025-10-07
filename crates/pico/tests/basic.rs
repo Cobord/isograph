@@ -22,6 +22,11 @@ fn basic() {
     assert_eq!(*first_letter(&db, input_id), 'a');
     assert_eq!(FIRST_LETTER_COUNTER.load(Ordering::SeqCst), 1);
 
+    assert_eq!(*first_letter(&db, input_id), 'a');
+    assert_eq!(*first_letter(&db, input_id), 'a');
+    assert_eq!(*first_letter(&db, input_id), 'a');
+    assert_eq!(FIRST_LETTER_COUNTER.load(Ordering::SeqCst), 1);
+
     db.set(Input {
         key: "key",
         value: "qwer".to_string(),
