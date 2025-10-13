@@ -79,16 +79,16 @@ async fn start_language_server(
         current_working_directory,
     );
     info!("Starting language server");
-    if let Err(_e) = isograph_lsp::start_language_server::<GraphQLNetworkProtocol>(
+    if let Err(lsp_err) = isograph_lsp::start_language_server::<GraphQLNetworkProtocol>(
         &config_location,
         current_working_directory,
     )
     .await
     {
         error!(
-            "{}",
+            "{}\n{:?}",
             "Error encountered when running language server.".bright_red(),
-            // TODO derive Error and print e
+            lsp_err
         );
         std::process::exit(1);
     }
