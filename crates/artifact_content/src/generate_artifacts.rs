@@ -33,7 +33,9 @@ use std::{
     ops::Deref,
 };
 use thiserror::Error;
-use validated_isograph_schema::{ContainsIsoStats, GetValidatedSchemaError, get_validated_schema};
+use validated_isograph_schema::{
+    ContainsIsoStats, GetValidatedSchemaError, client_scalar_selectable_named, get_validated_schema,
+};
 
 use crate::{
     eager_reader_artifact::{
@@ -253,11 +255,19 @@ fn get_artifact_path_and_content_impl<TNetworkProtocol: NetworkProtocol>(
                 parent_object_entity_name,
                 client_scalar_selectable_name,
             ))) => {
-                let client_scalar_selectable = schema
-                    .client_scalar_selectable(
-                        *parent_object_entity_name,
-                        *client_scalar_selectable_name,
+                let memo_ref = client_scalar_selectable_named(
+                    db,
+                    *parent_object_entity_name,
+                    *client_scalar_selectable_name,
+                );
+                let client_scalar_selectable = memo_ref
+                    .deref()
+                    .as_ref()
+                    .expect(
+                        "Expected parsing to have succeeded by this point. \
+                        This is indicative of a bug in Isograph.",
                     )
+                    .as_ref()
                     .expect(
                         "Expected selectable to exist. \
                         This is indicative of a bug in Isograph.",
@@ -803,7 +813,6 @@ fn write_param_type_from_selection<TNetworkProtocol: NetworkProtocol>(
                 DefinitionLocation::Client((parent_object_entity_name, client_field_name)) => {
                     write_param_type_from_client_field(
                         db,
-                        schema,
                         query_type_declaration,
                         nested_client_field_imports,
                         loadable_fields,
@@ -867,43 +876,59 @@ fn write_param_type_from_selection<TNetworkProtocol: NetworkProtocol>(
 #[expect(clippy::too_many_arguments)]
 fn write_param_type_from_client_field<TNetworkProtocol: NetworkProtocol>(
     db: &IsographDatabase<TNetworkProtocol>,
-    schema: &Schema<TNetworkProtocol>,
     query_type_declaration: &mut String,
     nested_client_field_imports: &mut BTreeSet<ParentObjectEntityNameAndSelectableName>,
     loadable_fields: &mut BTreeSet<ParentObjectEntityNameAndSelectableName>,
     indentation_level: u8,
     scalar_field_selection: &ScalarSelection<ScalarSelectableId>,
     parent_object_entity_name: ServerObjectEntityName,
-    client_field_name: ClientScalarSelectableName,
+    client_scalar_selectable_name: ClientScalarSelectableName,
 ) {
-    let client_field = schema
-        .client_scalar_selectable(parent_object_entity_name, client_field_name)
+    let memo_ref = client_scalar_selectable_named(
+        db,
+        parent_object_entity_name,
+        client_scalar_selectable_name,
+    );
+    let client_scalar_selectable = memo_ref
+        .deref()
+        .as_ref()
+        .expect(
+            "Expected parsing to have succeeded by this point. \
+            This is indicative of a bug in Isograph.",
+        )
+        .as_ref()
         .expect(
             "Expected selectable to exist. \
             This is indicative of a bug in Isograph.",
         );
+
     write_optional_description(
-        client_field.description,
+        client_scalar_selectable.description,
         query_type_declaration,
         indentation_level,
     );
     query_type_declaration.push_str(&"  ".repeat(indentation_level as usize).to_string());
-    match client_field.variant {
+    match client_scalar_selectable.variant {
         ClientFieldVariant::Link
         | ClientFieldVariant::UserWritten(_)
         | ClientFieldVariant::ImperativelyLoadedField(_) => {
-            nested_client_field_imports.insert(client_field.type_and_field);
+            nested_client_field_imports.insert(client_scalar_selectable.type_and_field);
             let inner_output_type = format!(
                 "{}__output_type",
-                client_field.type_and_field.underscore_separated()
+                client_scalar_selectable
+                    .type_and_field
+                    .underscore_separated()
             );
             let output_type = match scalar_field_selection.scalar_selection_directive_set {
                 ScalarSelectionDirectiveSet::Updatable(_)
                 | ScalarSelectionDirectiveSet::None(_) => inner_output_type,
                 ScalarSelectionDirectiveSet::Loadable(_) => {
-                    loadable_fields.insert(client_field.type_and_field);
+                    loadable_fields.insert(client_scalar_selectable.type_and_field);
                     let provided_arguments = get_provided_arguments(
-                        client_field.variable_definitions.iter().map(|x| &x.item),
+                        client_scalar_selectable
+                            .variable_definitions
+                            .iter()
+                            .map(|x| &x.item),
                         &scalar_field_selection.arguments,
                     );
 
@@ -913,7 +938,9 @@ fn write_param_type_from_client_field<TNetworkProtocol: NetworkProtocol>(
                     } else {
                         format!(
                             ",\n{indent}Omit<ExtractParameters<{}__param>, keyof {}>",
-                            client_field.type_and_field.underscore_separated(),
+                            client_scalar_selectable
+                                .type_and_field
+                                .underscore_separated(),
                             get_loadable_field_type_from_arguments(db, provided_arguments)
                         )
                     };
@@ -924,7 +951,9 @@ fn write_param_type_from_client_field<TNetworkProtocol: NetworkProtocol>(
                         {indent}{inner_output_type}\
                         {provided_args_type}\n\
                         {}>",
-                        client_field.type_and_field.underscore_separated(),
+                        client_scalar_selectable
+                            .type_and_field
+                            .underscore_separated(),
                         "  ".repeat(indentation_level as usize),
                     )
                 }
@@ -1026,7 +1055,6 @@ fn write_updatable_data_type_from_selection<TNetworkProtocol: NetworkProtocol>(
                 DefinitionLocation::Client((parent_object_entity_name, client_field_id)) => {
                     write_param_type_from_client_field(
                         db,
-                        schema,
                         query_type_declaration,
                         nested_client_field_imports,
                         loadable_fields,

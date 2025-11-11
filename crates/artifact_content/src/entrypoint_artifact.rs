@@ -28,6 +28,7 @@ use isograph_schema::{
     initial_variable_context, server_object_entity_named,
 };
 use std::{collections::BTreeSet, ops::Deref};
+use validated_isograph_schema::client_scalar_selectable_named;
 
 #[expect(clippy::too_many_arguments)]
 pub(crate) fn generate_entrypoint_artifacts<TNetworkProtocol: NetworkProtocol>(
@@ -40,8 +41,19 @@ pub(crate) fn generate_entrypoint_artifacts<TNetworkProtocol: NetworkProtocol>(
     file_extensions: GenerateFileExtensionsOption,
     persisted_documents: &mut Option<PersistedDocuments>,
 ) -> Vec<ArtifactPathAndContent> {
-    let entrypoint = schema
-        .client_scalar_selectable(parent_object_entity_name, entrypoint_scalar_selectable_name)
+    let memo_ref = client_scalar_selectable_named(
+        db,
+        parent_object_entity_name,
+        entrypoint_scalar_selectable_name,
+    );
+    let entrypoint = memo_ref
+        .deref()
+        .as_ref()
+        .expect(
+            "Expected parsing to have succeeded by this point. \
+            This is indicative of a bug in Isograph.",
+        )
+        .as_ref()
         .expect(
             "Expected selectable to exist. \
             This is indicative of a bug in Isograph.",
