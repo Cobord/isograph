@@ -16,6 +16,7 @@ use isograph_schema::{
     ValidatedScalarSelection, ValidatedSelection, VariableContext, categorize_field_loadability,
     server_object_selectable_named, transform_arguments_with_child_context,
 };
+use validated_isograph_schema::client_scalar_selectable_named;
 
 use crate::{
     generate_artifacts::{ReaderAst, get_serialized_field_arguments},
@@ -43,9 +44,23 @@ fn generate_reader_ast_node<TNetworkProtocol: NetworkProtocol>(
                     indentation_level,
                     initial_variable_context,
                 ),
-                DefinitionLocation::Client((parent_object_entity_name, client_field_name)) => {
-                    let client_field = schema
-                        .client_scalar_selectable(parent_object_entity_name, client_field_name)
+                DefinitionLocation::Client((
+                    parent_object_entity_name,
+                    client_scalar_selectable_name,
+                )) => {
+                    let memo_ref = client_scalar_selectable_named(
+                        db,
+                        parent_object_entity_name,
+                        client_scalar_selectable_name,
+                    );
+                    let client_scalar_selectable = memo_ref
+                        .deref()
+                        .as_ref()
+                        .expect(
+                            "Expected parsing to have succeeded by this point. \
+                            This is indicative of a bug in Isograph.",
+                        )
+                        .as_ref()
                         .expect(
                             "Expected selectable to exist. \
                             This is indicative of a bug in Isograph.",
@@ -54,7 +69,7 @@ fn generate_reader_ast_node<TNetworkProtocol: NetworkProtocol>(
                         db,
                         scalar_field_selection,
                         schema,
-                        client_field,
+                        client_scalar_selectable,
                         indentation_level,
                         path,
                         root_refetched_paths,
@@ -770,21 +785,38 @@ fn refetched_paths_with_path<TNetworkProtocol: NetworkProtocol>(
                     DefinitionLocation::Server(_) => {
                         // Do nothing, we encountered a server field
                     }
-                    DefinitionLocation::Client((parent_object_entity_name, client_field_name)) => {
-                        let client_field = schema
-                            .client_scalar_selectable(parent_object_entity_name, client_field_name)
+                    DefinitionLocation::Client((
+                        parent_object_entity_name,
+                        client_scalar_selectable_name,
+                    )) => {
+                        let memo_ref = client_scalar_selectable_named(
+                            db,
+                            parent_object_entity_name,
+                            client_scalar_selectable_name,
+                        );
+                        let client_scalar_selectable = memo_ref
+                            .deref()
+                            .as_ref()
+                            .expect(
+                                "Expected parsing to have succeeded by this point. \
+                                This is indicative of a bug in Isograph.",
+                            )
+                            .as_ref()
                             .expect(
                                 "Expected selectable to exist. \
                                 This is indicative of a bug in Isograph.",
                             );
+
                         match categorize_field_loadability(
-                            client_field,
+                            client_scalar_selectable,
                             &scalar_field_selection.scalar_selection_directive_set,
                         ) {
                             Some(Loadability::ImperativelyLoadedField(_)) => {
                                 paths.insert(PathToRefetchField {
                                     linked_fields: path.clone(),
-                                    field_name: SelectionType::Scalar(client_field.name.item),
+                                    field_name: SelectionType::Scalar(
+                                        client_scalar_selectable.name.item,
+                                    ),
                                 });
                             }
                             Some(Loadability::LoadablySelectedField(_)) => {
@@ -793,12 +825,12 @@ fn refetched_paths_with_path<TNetworkProtocol: NetworkProtocol>(
                             None => {
                                 let new_paths = refetched_paths_with_path(
                                     db,
-                                    client_field.selection_set_for_parent_query(),
+                                    client_scalar_selectable.selection_set_for_parent_query(),
                                     schema,
                                     path,
                                     &initial_variable_context.child_variable_context(
                                         &scalar_field_selection.arguments,
-                                        &client_field.variable_definitions,
+                                        &client_scalar_selectable.variable_definitions,
                                         &ScalarSelectionDirectiveSet::None(EmptyDirectiveSet {}),
                                     ),
                                 );
