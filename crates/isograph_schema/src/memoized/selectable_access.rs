@@ -111,8 +111,8 @@ pub fn selectables<TCompilationProfile: CompilationProfile>(
     selectables.extend(
         deprecated_client_selectable_map(db)
             .clone_err()?
-            .iter()
-            .flat_map(|(_key, value)| {
+            .values()
+            .flat_map(|value| {
                 let value = value.clone().ok()?;
                 value.client_defined().wrap_some()
             }),

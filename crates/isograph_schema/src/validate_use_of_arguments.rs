@@ -42,8 +42,8 @@ pub fn validate_use_of_arguments<TCompilationProfile: CompilationProfile>(
 
     for client_selectable in deprecated_client_selectable_map(db)
         .clone_err()?
-        .iter()
-        .flat_map(|(_, value)| value.as_ref().ok())
+        .values()
+        .flat_map(|value| value.as_ref().ok())
     {
         validate_use_of_arguments_for_client_type(db, client_selectable.dereference(), &mut errors);
     }

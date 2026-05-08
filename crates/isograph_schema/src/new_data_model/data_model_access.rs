@@ -64,8 +64,8 @@ pub fn flattened_server_object_entities<TCompilationProfile: CompilationProfile>
     let entities = flattened_entities(db);
 
     entities
-        .iter()
-        .filter_map(|(_, x)| {
+        .values()
+        .filter_map(|x| {
             if x.lookup(db).selection_info.as_object().is_some() {
                 x.dereference().wrap_some()
             } else {
@@ -91,8 +91,8 @@ pub fn flattened_selectables<TCompilationProfile: CompilationProfile>(
     db: &IsographDatabase<TCompilationProfile>,
 ) -> Vec<MemoRef<FlattenedDataModelSelectable<TCompilationProfile>>> {
     let mut selectables = flattened_server_schema(db)
-        .iter()
-        .flat_map(|(_entity_name, value)| {
+        .values()
+        .flat_map(|value| {
             value
                 .item
                 .1
