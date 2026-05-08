@@ -5,7 +5,7 @@ export default function YoutubeEmbed() {
         <div className="row">
           <div className="col col--8 col--offset-2">
             <h2 className="text--center">
-              Watch the talk at GraphQL&nbsp;Conf 2024
+              Watch the talk at GraphQL&nbsp;Conf 2025
             </h2>
           </div>
         </div>
@@ -14,8 +14,8 @@ export default function YoutubeEmbed() {
             <iframe
               width="100%"
               height="444"
-              src="https://www.youtube-nocookie.com/embed/sf8ac2NtwPY?si=Ztxho3m1mPKFO6ME"
-              title="Performing Impossible Feats with Isograph at GraphQL Conf 2024"
+              src="https://www.youtube-nocookie.com/embed/3GWZ9yiskFk"
+              title="GraphQL in a World of Full-stack, Rich Clients"
               allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
               allowFullScreen
               frameBorder="0"
