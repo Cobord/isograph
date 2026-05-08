@@ -15,9 +15,7 @@ export default function HomepageHeader() {
                 styles.heroSubtitle,
               )}
             >
-              The UI framework for teams that&nbsp;move&nbsp;fast&nbsp;&mdash;
-              <br />
-              <i>without</i> breaking things
+              The compiler for your UI
             </p>
             <Buttons />
           </div>
